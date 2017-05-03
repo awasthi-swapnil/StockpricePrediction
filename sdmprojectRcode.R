@@ -14,19 +14,34 @@ colSums(is.na(brentoil))
 
 #setting up the dates format and extracting required columns
 sp500$Date <- as.Date(sp500$Date, '%Y-%m-%d')
-sp500.data <- sp500[,c('Date','Adj.Close')]
+sp500Adj <- sp500[,c('Date','Adj.Close')]
+colnames(sp500Adj)[2] <- 'sp500Adj.Close'
 
 delta$Date <- as.Date(delta$Date, '%Y-%m-%d')
-delta.data <- delta[,c('Date','Adj.Close')]
+deltaAdj <- delta[,c('Date','Adj.Close')]
+colnames(deltaAdj)[2] <- 'DeltaAdj.Close'
 
 jetfuel$DATE <- as.Date(jetfuel$DATE, '%Y-%m-%d')
+colnames(jetfuel)[2] <- 'JetFuelValue'
 brentoil$DATE <- as.Date(brentoil$DATE, '%Y-%m-%d')
+colnames(brentoil)[2] <- 'BrentOilValue'
 
 #converting the NAs to mean values of the column - Imputation
 jetfuel[is.na(jetfuel[,2]), 2] <- mean(jetfuel[,2], na.rm = TRUE)
 brentoil[is.na(jetfuel[,2]), 2] <- mean(brentoil[,2], na.rm = TRUE)
 
+#install.packages('sqldf')
+library('sqldf')
 
+finaldata <- sqldf('SELECT *
+                   FROM sp500Adj 
+                                 INNER JOIN deltaAdj ON (sp500Adj.Date = deltaAdj.Date)
+                                 INNER JOIN brentoil ON (sp500Adj.Date = brentoil.DATE)
+                                 INNER JOIN jetfuel ON (sp500Adj.Date = jetfuel.DATE)')
+
+#removing redundant date columns 3, 5 and 7
+finaldata[3] <- NULL
+#write.csv(finaldata, "FinalData.csv")
 
 
 
