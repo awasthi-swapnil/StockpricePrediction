@@ -20,12 +20,3 @@ jetfuel$DATE <- as.Date(jetfuel$DATE, '%Y-%m-%d')
 brentoil$DATE <- as.Date(brentoil$DATE, '%Y-%m-%d')
 
 
-fuel <- fuel[13:nrow(fuel),]
-#changing name of column 
-colnames(fuel)[1] <- 'Dates'
-colnames(fuel)[2] <- 'Jet-Fuel-prices'
-
-colnames(fuel)
-fuelprices <- fuel[,c('Jet-Fuel prices')]
-fuel.rmNA <- as.data.frame(fuelprices[complete.cases(fuelprices)]) #removing NAs
-dat <- dat[!is.na(as.numeric(as.character(dat$A))),]
