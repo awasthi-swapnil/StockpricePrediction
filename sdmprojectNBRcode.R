@@ -160,8 +160,12 @@ work.nb <- work.nbALL[7:nrow(work.nbALL),]
 work.nb[1,ncol(work.nb)] <- work.nb[2,ncol(work.nb)]
 work.nb$deltapriceDir <- as.factor(work.nb$deltapriceDir)
 
-#work.nb[is.na(work.nb[,6]), 6] <- mean(work.nb[,6], na.rm = TRUE)
-
+#removingg NA from brent oil columns
+work.nb[is.na(work.nb[,6]), 6] <- 'Unchanged'
+work.nb[is.na(work.nb[,7]), 7] <- 'Unchanged'
+work.nb[is.na(work.nb[,8]), 8] <- 'Unchanged'
+work.nb[is.na(work.nb[,9]), 9] <- 'Unchanged'
+work.nb[is.na(work.nb[,10]), 10] <- 'Unchanged'
 #partition
 part.nb <-sample(1:nrow(work.nb), rnum * nrow(work.nb))
 trng.nb <- work.nb[part,]
@@ -170,9 +174,9 @@ test.nb <- work.nb[-part,]
 #Naive Bayes
 # Modeling using NaiveBayes
 model.NB <- NaiveBayes(deltapriceDir ~ . , data = trng.nb)
-test.nb <- test.nb[complete.cases(trng.nb),]
+#test.nb <- test.nb[complete.cases(trng.nb),]
 predict.nb <- predict(model.NB, data = test.nb)
-table(predict.nb, test$delta_pc1)
+#table( test.nb$deltapriceDir, predict.n)
 confusionMatrix(test.nb$deltapriceDir, predict.nb$class)
 
 
