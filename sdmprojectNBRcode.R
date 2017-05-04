@@ -1,4 +1,4 @@
-##### NAIVE BAYES #####
+##### NAIVE BAYES ##### part 2 ## make sure workdata.withemptyrows is created before we run this ##
 
 workdata.nb <- workdata.withemptyrows
 tempsnppccal <- workdata.nb[7:nrow(workdata.nb),]
@@ -69,7 +69,7 @@ brent_cat1 = c(); brent_cat2= c(); brent_cat3 = c(); brent_cat4 = c(); brent_cat
 for (i in 7:nrow(workdata.nb))
 {
   
-  brent_cat1[i] = ifelse(brent_pc1[i] < -1 * brent.sd, 'awful', 
+  brent_cat1[i] = ifelse(brent_pc1[i] < -1 * brent.sd1, 'awful', 
                        (ifelse((brent_pc1[i] >= -1 * brent.sd1 && brent_pc1[i] < -0.3 * brent.sd1), 'Bad',
                                (ifelse((brent_pc1[i] >= -0.3 * brent.sd1 && brent_pc1[i] < 0.3 * brent.sd1), 'Unchanged',
                                        (ifelse((brent_pc1[i] >= 0.3 * brent.sd1 && brent_pc1[i] < brent.sd1), 'Good',
@@ -172,8 +172,8 @@ trng.nb <- work.nb[part,]
 test.nb <- work.nb[-part,]
 
 #Naive Bayes
-# Modeling using NaiveBayes
-model.NB <- NaiveBayes(deltapriceDir ~ . , data = trng.nb)
+# Modeling using NaiveBayes #required "e1071" package
+model.NB <- naiveBayes(deltapriceDir ~ . , data = trng.nb)
 #test.nb <- test.nb[complete.cases(trng.nb),]
 predict.nb <- predict(model.NB, data = test.nb)
 #table( test.nb$deltapriceDir, predict.n)

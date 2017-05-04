@@ -28,7 +28,7 @@ colnames(brentoil)[2] <- 'BrentOilValue'
 
 #converting the NAs to mean values of the column - Imputation
 jetfuel[is.na(jetfuel[,2]), 2] <- mean(jetfuel[,2], na.rm = TRUE)
-brentoil[is.na(jetfuel[,2]), 2] <- mean(brentoil[,2], na.rm = TRUE)
+brentoil[is.na(brentoil[,2]), 2] <- mean(brentoil[,2], na.rm = TRUE)
 
 #install.packages('sqldf')
 library('sqldf')
@@ -41,6 +41,8 @@ finaldata <- sqldf('SELECT *
 
 #removing redundant date columns 3, 5 and 7
 finaldata[5] <- NULL
+#finaldata[5] <- NULL
+#finaldata[5] <- NULL
 #write.csv(finaldata, "FinalData.csv")
 #plot(finaldata$sp500Adj.Close, finaldata$DeltaAdj.Close)
 
@@ -94,7 +96,7 @@ workdata.withemptyrows <- data.frame(snp_pc1, snp_pc2, snp_pc3, snp_pc4, snp_pc5
 #workdata$DeltaAdj.Close <- finaldata$DeltaAdj.Close
 #workdata$Date <- finaldata$Date
 #removing empty rows
-workdata <- workdata.withemptyrows[7:nrow(workdata),]
+workdata <- workdata.withemptyrows[7:nrow(workdata.withemptyrows),]
 
 #partition
 rnum <- (runif(1, .60, .70))
@@ -111,10 +113,11 @@ linear.rmse  <- sqrt(mean(linear.reg$residuals)^2);
 #predicting the test data
 linear.predict <- predict(linear.reg,test)
 
-res <- residuals(linear.reg)
-plot(jitter(res)~jitter(delta_pc1), ylab="Residuals", xlab="delta_pc1", data=test)
+#visualization
+#res <- residuals(linear.reg)
+#plot(jitter(res)~jitter(delta_pc1), ylab="Residuals", xlab="delta_pc1", data=test)
 
-#plot for resid
+#plot for resid #required 'car' package
 qqPlot(linear.reg, main="QQ Plot")
 # leverage plots
 leveragePlots(linear.reg)
@@ -126,7 +129,7 @@ sqrt(vif(linear.reg)) > 2 # problem?
 ####### Logistic Regression ########
 
 avg <- mean(workdata$delta_pc1)
-workdata$delta_01 <- ifelse(workdata$delta_pc1 >= 0.00033, 1, 0)
+workdata$delta_01 <- ifelse(workdata$delta_pc1 >= 0.00033, 1, 0) #this value is above average
 
 lr.delta <- glm(delta_01 ~ . -delta_pc1, family=binomial(link="logit"), data=trng)
 summary(lr.delta)
@@ -135,7 +138,7 @@ summary(lr.delta)
 lr.delta.01 <- glm(delta_01 ~ snp_pc1 + brent_pc1 + brent_pc2 + brent_pc3 + jetfuel_pc1 + jetfuel_pc3 + jetfuel_pc4, family=binomial(link="logit"), data=trng)
 summary(lr.delta.01)
 
-lr.delta.02 <- glm(delta_01 ~ snp_pc1 + +brent_pc1 + brent_pc3 + jetfuel_pc1, family=binomial(link="logit"), data=trng)
+lr.delta.02 <- glm(delta_01 ~ snp_pc1 +brent_pc1 + brent_pc3 + jetfuel_pc1, family=binomial(link="logit"), data=trng)
 summary(lr.delta.02)
 
 #Let's predict
@@ -157,7 +160,8 @@ table(test$delta_01,pred_3)
 confusionMatrix(test$delta_01, pred_1)
 confusionMatrix(test$delta_01, pred_2)
 confusionMatrix(test$delta_01, pred_3)
-
+#here - we can see the increase in accuracy of the models as we knock the non significant variables.
+#pred_3 has the highest accuracy
 
 # Modelling using Recursive Partition Tree
 #install.packages('rpart')
@@ -186,14 +190,10 @@ summary(prediction.gbm)
 pred_gbm <- ifelse(prediction.gbm > 0.42,1,0)
 printcp(model.rpt)
 table(pred_gbm, test$delta_01)
-# accuracy remains around 61-62%
+# accuracy remains somewhat around 64-65
 confusionMatrix(pred_gbm, test$delta_01)
 
-##### NAIVE BAYES #####
-
-finaldata.nb <- finaldata 
-
-
+##### NAIVE BAYES ##### continued in next file
 
 
 
