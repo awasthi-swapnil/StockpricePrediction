@@ -160,7 +160,7 @@ work.nb <- work.nbALL[7:nrow(work.nbALL),]
 work.nb[1,ncol(work.nb)] <- work.nb[2,ncol(work.nb)]
 work.nb$deltapriceDir <- as.factor(work.nb$deltapriceDir)
 
-work.nb[is.na(work.nb[,6]), 6] <- mean(work.nb[,6], na.rm = TRUE)
+#work.nb[is.na(work.nb[,6]), 6] <- mean(work.nb[,6], na.rm = TRUE)
 
 #partition
 part.nb <-sample(1:nrow(work.nb), rnum * nrow(work.nb))
